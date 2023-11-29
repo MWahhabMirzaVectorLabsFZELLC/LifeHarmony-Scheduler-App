@@ -12,7 +12,8 @@ class DailyScheduleApp extends StatelessWidget {
     return MaterialApp(
       title: 'Daily Schedule App',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
+        primarySwatch: Colors.green, // Change primary coloaccentColor: Colors.orange, // Change accent color
+        visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
       home: DailyScheduleScreen(),
     );
@@ -90,12 +91,64 @@ class _DailyScheduleScreenState extends State<DailyScheduleScreen> {
                 return ListTile(
                   title: Text(schedule[index].time),
                   subtitle: Text(schedule[index].task),
+                  onTap: () {
+                    _editScheduleItem(index);
+                  },
                 );
               },
             ),
           ),
         ],
       ),
+    );
+  }
+
+  void _editScheduleItem(int index) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        String editedTime = schedule[index].time;
+        String editedTask = schedule[index].task;
+
+        return AlertDialog(
+          title: Text('Edit Schedule'),
+          content: Column(
+            children: [
+              TextField(
+                decoration: InputDecoration(labelText: 'Time'),
+                controller: TextEditingController(text: editedTime),
+                onChanged: (value) {
+                  editedTime = value;
+                },
+              ),
+              TextField(
+                decoration: InputDecoration(labelText: 'Task'),
+                controller: TextEditingController(text: editedTask),
+                onChanged: (value) {
+                  editedTask = value;
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                setState(() {
+                  schedule[index] = ScheduleItem(time: editedTime, task: editedTask);
+                });
+                Navigator.of(context).pop();
+              },
+              child: Text('Save'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
@@ -106,4 +159,3 @@ class ScheduleItem {
 
   ScheduleItem({required this.time, required this.task});
 }
-
